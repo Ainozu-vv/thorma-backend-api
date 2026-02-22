@@ -46,7 +46,20 @@ namespace ThormaBackendAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Kep>> GetKep(string id)
         {
-            var kep = await _context.Kepek.FindAsync(id);
+            var kep = Ok(await _context.Kepek
+                .Select(k => new
+                {
+                    k.Leltar,
+                    k.Cim,
+                    k.Keszult,
+                    k.Anyag,
+                    k.Technika,
+                    k.Szeles,
+                    k.Magas,
+                    FestoNev = k.Festo != null ? k.Festo.Nev : null
+                })
+                .Where(k => k.Leltar == id)
+                .FirstOrDefaultAsync());
 
             if (kep == null)
             {
